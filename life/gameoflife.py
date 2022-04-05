@@ -9,8 +9,8 @@ class GameOfLife:
         self.neighbours_next_generation = {}
 
         # the initial population will be put in the next gen, so we need to init
-        # the current generation at 0
-        self.generation = 0
+        # the current generation at -1
+        self.generation = -1
         for cell in population:
             self.populate_cell(cell)
 
@@ -95,26 +95,30 @@ class GameOfLife:
 
 
 
-MAX_PERIOD = 10
+MAX_PERIOD = 1000
 
 if __name__ == '__main__':
-    g = GameOfLife([(0, 0)])
 
-    #print(g.occupied)
+    initial_population = []
 
-    terminal = False
-    period = 0
-    generation = 0
+    for n in range(1, 70):
+        initial_population.append((0, n))
 
-    for i in range(MAX_PERIOD):
-        terminal, period, generation = g.next_generation()
+        g = GameOfLife(initial_population)
+
+        terminal = False
+        period = 0
+        generation = 0
+
+        for i in range(MAX_PERIOD):
+            terminal, period, generation = g.next_generation()
+            if terminal:
+                break
+
         if terminal:
-            break
-
-    if terminal:
-        if period > 0:
-            print(f"Period {period} found at generation {generation}")
+            if period > 0:
+                print(f"f({n}) = {period}. Period {period} found at generation {generation}")
+            else:
+                print(f"f({n}) = 0. All cells have died at generation {generation}")
         else:
-            print(f"All cells have died at generation {generation}")
-    else:
-        print(f"No period found after {generation} generations")
+            print(f"f({n}) = INF. No period found after {generation} generations")
