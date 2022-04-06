@@ -1,6 +1,6 @@
 mod game_of_life;
 
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 use std::collections::HashMap;
 use crate::game_of_life::{Cell, next_generation, populate_cell, show_neighbours, show_population, unpopulate_cell};
 
@@ -8,8 +8,8 @@ use crate::game_of_life::{Cell, next_generation, populate_cell, show_neighbours,
 fn main() {
     let population = [Cell{ x: 0, y: 0 }, Cell{ x: 0, y: 1 }, Cell{ x: 0, y: 2 }];
     // set to store all populated cells: {(x, y)}
-    let mut occupied: HashSet<Cell>= HashSet::new();
-    let mut occupied_next_generation: HashSet<Cell>= HashSet::new();
+    let mut occupied: BTreeSet<Cell>= BTreeSet::new();
+    let mut occupied_next_generation: BTreeSet<Cell>= BTreeSet::new();
 
     // dictionary to store all cells with neighbours: {(x, y): n}
     let mut neighbours: HashMap<Cell, i32> = HashMap::new();
