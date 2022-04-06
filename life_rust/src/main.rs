@@ -13,7 +13,9 @@ fn main() {
     let mut population= Vec::new();
 
     for n in 1..70 {
+        // add one cell to the initial population each iteration
         population.push(Cell{x:0, y:n});
+
         // set to store all populated cells: {(x, y)}
         let mut occupied: BTreeSet<Cell>= BTreeSet::new();
         let mut occupied_next_generation: BTreeSet<Cell>= BTreeSet::new();
@@ -37,15 +39,15 @@ fn main() {
         let mut period = 0;
 
         for i in 0..MAX_PERIOD {
-            //println!("---------------------- {} ---------------------", i);
+
             next_generation(&mut generation, &mut occupied, &mut occupied_next_generation, &mut neighbours, &mut neighbours_next_generation);
-            //show_population(generation, &occupied);
 
             // create hash for this population
             let mut hasher = DefaultHasher::new();
             occupied.hash(&mut hasher);
             let hash = hasher.finish();
 
+            // check if we have seen this population before
             if history.contains_key(&hash) {
                 // repetition found
                 let same_generation = history.get(&hash);
@@ -55,18 +57,18 @@ fn main() {
                 history.insert(hash, generation);
             }
 
+            // check if all have died
             if occupied.len() == 0 {
                 // all died
                 terminal = true;
             }
-
-            //show_neighbours(generation, &neighbours);
 
             if terminal {
                 break;
             }
         }
 
+        // show results for this n
         if terminal {
             if period == 0 {
                 println!("f({}) = 0. All cells have died at generation {}", n, generation)
@@ -77,15 +79,4 @@ fn main() {
             println!("f({}) = INF. No period found after {} generations", n, generation);
         }
     }
-
-    // println!("Neighbours");
-    // for (cell, neighbours) in &neighbours_next_generation {
-    //     println!("{} has {} neighbours", cell, neighbours);
-    // }
-
-// self.populate_cell(cell)
-//
-// # store generation signatures to check for recurrences
-// self.history = {}
-
 }
