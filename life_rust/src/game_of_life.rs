@@ -1,6 +1,7 @@
 use std::collections::{HashMap, BTreeSet};
+use std::collections::hash_map::DefaultHasher;
 use std::fmt;
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
 
 
 // A cell needs to be hashable and comparable to use it as key for sets and maps
@@ -82,7 +83,7 @@ pub fn next_generation(generation: &mut i32,
                        occupied_next_generation: &mut BTreeSet<Cell>,
                        neighbours: &mut HashMap<Cell, i32>,
                        neighbours_next_generation: &mut HashMap<Cell, i32>,
-                       ) {
+                        ) {
 
     // period = 0
     // terminal = False
@@ -105,6 +106,9 @@ pub fn next_generation(generation: &mut i32,
         let neighbours = neighbours.entry(*cell).or_insert(*n);
     }
 
+    // let mut history = HashMap::new();
+    // history.entry(occupied).or_insert(generation);
+
     //
     // # check if we have found a period yet, or all cells have died
     // signature = frozenset(self.occupied)
@@ -122,7 +126,7 @@ pub fn next_generation(generation: &mut i32,
     //
     // # die with 0, 1, 4-8, survive with 2, 3 neighbours
     for cell in occupied.iter() {
-        println!("Check {}", cell);
+        // println!("Check {}", cell);
         if !neighbours.contains_key(cell) || (neighbours.get(&cell) != Some(&2) && neighbours.get(&cell) != Some(&3)) {
             unpopulate_cell(*cell, occupied_next_generation, neighbours_next_generation);
         }
@@ -145,6 +149,10 @@ pub fn show_population(generation: i32, occupied: &BTreeSet<Cell>) {
     for cell in occupied.iter() {
         print!("{}, ", cell);
     }
+    let mut hasher = DefaultHasher::new();
+    occupied.hash(&mut hasher);
+    let hash = hasher.finish();
+    println!(" HASH: {}", hash);
 }
 
 pub fn show_neighbours(generation: i32, neighbours: &HashMap<Cell, i32>) {
