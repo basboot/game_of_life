@@ -25,7 +25,6 @@ pub fn populate_cell(cell: Cell,
     assert!(!occupied_next_generation.contains(&cell), "Cell {} is already populated.", cell);
     // add cell to the next generation
     occupied_next_generation.insert(cell);
-    //println!("{}", cell);
 
     // update the cells neighbours for the next generation
     for x in -1..2 {
@@ -33,7 +32,6 @@ pub fn populate_cell(cell: Cell,
             if x == 0 && y == 0 {
                 continue
             }
-            //println!("{}, {}", x, y);
             add_neighbour(Cell{x: cell.x + x, y: cell.y + y}, neighbours_next_generation);
         }
     }
@@ -45,7 +43,6 @@ pub fn unpopulate_cell(cell: Cell,
     assert!(occupied_next_generation.contains(&cell), "Cell {} is not populated.", cell);
     // remove cell from the next generation
     occupied_next_generation.remove(&cell);
-    //println!("{}", cell);
 
     // update the cells neighbours for the next generation
     for x in -1..2 {
@@ -53,7 +50,6 @@ pub fn unpopulate_cell(cell: Cell,
             if x == 0 && y == 0 {
                 continue
             }
-            //println!("{}, {}", x, y);
             remove_neighbour(Cell{x: cell.x + x, y: cell.y + y}, neighbours_next_generation);
         }
     }
@@ -85,16 +81,10 @@ pub fn next_generation(generation: &mut i32,
                        neighbours_next_generation: &mut HashMap<Cell, i32>,
                         ) {
 
-    // period = 0
-    // terminal = False
-    //
     *generation += 1;
-    // # copy next generation over the current
-    // # a shallow copy should be sufficient
-    // self.occupied = self.occupied_next_generation.copy()
-    // self.neighbours = self.neighbours_next_generation.copy()
 
-    // TODO: implement extend trait
+    // copy next generation to current
+    // TODO: implement extend trait to speed up copy process
     occupied.clear();
     for cell in occupied_next_generation.iter() {
         occupied.insert(*cell);
@@ -109,39 +99,21 @@ pub fn next_generation(generation: &mut i32,
     // let mut history = HashMap::new();
     // history.entry(occupied).or_insert(generation);
 
+    // update next generation, based on current, according to life rules
     //
-    // # check if we have found a period yet, or all cells have died
-    // signature = frozenset(self.occupied)
-    // if signature in self.history:
-    // #print(f"Generation {self.generation} is the same as {self.history[signature]}")
-    // period = self.generation - self.history[signature]
-    // terminal = True
-    // else:
-    // self.history[signature] = self.generation
-    //
-    // if len(self.occupied) == 0:
-    //     terminal = True
-    //
-    // # update next generation, based on current, according to life rules
-    //
-    // # die with 0, 1, 4-8, survive with 2, 3 neighbours
+    // die with 0, 1, 4-8, survive with 2, 3 neighbours
     for cell in occupied.iter() {
-        // println!("Check {}", cell);
         if !neighbours.contains_key(cell) || (neighbours.get(&cell) != Some(&2) && neighbours.get(&cell) != Some(&3)) {
             unpopulate_cell(*cell, occupied_next_generation, neighbours_next_generation);
         }
     }
 
-    // # birth if empty cell has 3 neighbours
+    // birth if empty cell has 3 neighbours
     for (cell, n) in neighbours {
         if *n == 3 && !occupied.contains(cell) {
             populate_cell(*cell, occupied_next_generation, neighbours_next_generation);
         }
     }
-    // if neighbours == 3 and cell not in self.occupied:
-    //     self.populate_cell(cell)
-    //
-    // return terminal, period, self.generation
 }
 
 pub fn show_population(generation: i32, occupied: &BTreeSet<Cell>) {
