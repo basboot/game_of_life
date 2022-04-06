@@ -1,6 +1,6 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, BTreeSet};
 use std::fmt;
-
+use std::hash::Hash;
 
 
 // A cell needs to be hashable and comparable to use it as key for sets and maps
@@ -19,7 +19,7 @@ impl fmt::Display for Cell {
 }
 
 pub fn populate_cell(cell: Cell,
-                     occupied_next_generation: &mut HashSet<Cell>,
+                     occupied_next_generation: &mut BTreeSet<Cell>,
                      neighbours_next_generation: &mut HashMap<Cell, i32>) {
     assert!(!occupied_next_generation.contains(&cell), "Cell {} is already populated.", cell);
     // add cell to the next generation
@@ -39,7 +39,7 @@ pub fn populate_cell(cell: Cell,
 }
 
 pub fn unpopulate_cell(cell: Cell,
-                     occupied_next_generation: &mut HashSet<Cell>,
+                     occupied_next_generation: &mut BTreeSet<Cell>,
                      neighbours_next_generation: &mut HashMap<Cell, i32>) {
     assert!(occupied_next_generation.contains(&cell), "Cell {} is not populated.", cell);
     // remove cell from the next generation
@@ -78,8 +78,8 @@ pub fn remove_neighbour(cell: Cell,
 }
 
 pub fn next_generation(generation: &mut i32,
-                       occupied: &mut HashSet<Cell>,
-                       occupied_next_generation: &mut HashSet<Cell>,
+                       occupied: &mut BTreeSet<Cell>,
+                       occupied_next_generation: &mut BTreeSet<Cell>,
                        neighbours: &mut HashMap<Cell, i32>,
                        neighbours_next_generation: &mut HashMap<Cell, i32>,
                        ) {
@@ -98,6 +98,7 @@ pub fn next_generation(generation: &mut i32,
     for cell in occupied_next_generation.iter() {
         occupied.insert(*cell);
     }
+
     neighbours.clear();
     for (cell, n) in &*neighbours_next_generation {
         // all entries are new
@@ -139,12 +140,11 @@ pub fn next_generation(generation: &mut i32,
     // return terminal, period, self.generation
 }
 
-pub fn show_population(generation: i32, occupied: &HashSet<Cell>) {
+pub fn show_population(generation: i32, occupied: &BTreeSet<Cell>) {
     print!("Generation {}: ", generation);
     for cell in occupied.iter() {
         print!("{}, ", cell);
     }
-    println!();
 }
 
 pub fn show_neighbours(generation: i32, neighbours: &HashMap<Cell, i32>) {
