@@ -1,3 +1,5 @@
+from persistent_data import *
+
 class GameOfLife:
     def __init__(self, population):
         # set to store all populated cells: {(x, y)}
@@ -95,30 +97,58 @@ class GameOfLife:
 
 
 
-MAX_PERIOD = 1000
+MAX_PERIOD = 20000
+
+INITIAL_POPULATION = 1
+FINAL_POPULATION = 200
+
+# TODO: Save results, and use cached results, but bypass cache when settings have been changed
 
 if __name__ == '__main__':
+    # Load data to (re)start
+    results, max_n = load_data()
 
     initial_population = []
 
-    for n in range(1, 70):
+    # skip until initial population has been reached
+    for n in range(INITIAL_POPULATION - 1):
+        initial_population.append((0, n))
+
+    for n in range(INITIAL_POPULATION, FINAL_POPULATION):
         initial_population.append((0, n))
 
         g = GameOfLife(initial_population)
 
-        terminal = False
-        period = 0
-        generation = 0
+        # we only need to repeat the experiment if we have not run it yet (terminal == True)
+        # or if it was not finished, and we might improve (terminal == False, generation < MAX_PERIOD - 1)
 
-        for i in range(MAX_PERIOD):
-            terminal, period, generation = g.next_generation()
-            if terminal:
-                break
+        if (n not in results) or (not results[n]["terminal"] and results[n]["generation"] < MAX_PERIOD - 1):
+            terminal = False
+            period = 0
+            generation = 0
+
+            for i in range(MAX_PERIOD):
+                terminal, period, generation = g.next_generation()
+                if terminal:
+                    break
+
+            if n in results:
+                print(f"Updated result for f({n})")
+            results[n] = {"terminal": terminal, "period": period, "generation": generation}
+            max_n = max(n, max_n)
+            save_data(results, max_n)
+        else:
+            terminal = results[n]["terminal"]
+            period = results[n]["period"]
+            generation = results[n]["generation"]
 
         if terminal:
             if period > 0:
                 print(f"f({n}) = {period}. Period {period} found at generation {generation}")
+                #print(f"{n}, {period}, {generation}")
             else:
                 print(f"f({n}) = 0. All cells have died at generation {generation}")
+                #print(f"{n}, {period}, {generation}")
         else:
             print(f"f({n}) = INF. No period found after {generation} generations")
+            #print(f"{n}, {MAX_PERIOD}, {generation}")
