@@ -1,5 +1,12 @@
 from persistent_data import *
 
+# Global for easy implementation TODO: cleanup
+# keep track of x,y max and min to determine size of the universe
+min_x = 0
+min_y = 0
+max_x = 0
+max_y = 0
+
 class GameOfLife:
     def __init__(self, population):
         # set to store all populated cells: {(x, y)}
@@ -20,9 +27,17 @@ class GameOfLife:
         self.history = {}
 
     def populate_cell(self, cell):
+        global min_x, min_y, max_x, max_y
+
         assert cell not in self.occupied_next_generation, f"Cell {cell} is already populated."
         # add cell to the next generation
         self.occupied_next_generation.add(cell)
+
+        # keep track of x,y max and min to determine size of the universe
+        min_x = min(min_x, cell[0])
+        min_y = min(min_y, cell[1])
+        max_x = max(max_x, cell[0])
+        max_y = max(max_y, cell[1])
 
         # update the cells neighbours for the next generation
         for x in range(-1, 2):
@@ -97,10 +112,10 @@ class GameOfLife:
 
 
 
-MAX_PERIOD = 20000
+MAX_PERIOD = 10000
 
 INITIAL_POPULATION = 1
-FINAL_POPULATION = 200
+FINAL_POPULATION = 101
 
 # TODO: Save results, and use cached results, but bypass cache when settings have been changed
 
@@ -127,6 +142,11 @@ if __name__ == '__main__':
             period = 0
             generation = 0
 
+            min_x = 0
+            min_y = 0
+            max_x = 0
+            max_y = 0
+
             for i in range(MAX_PERIOD):
                 terminal, period, generation = g.next_generation()
                 if terminal:
@@ -134,21 +154,24 @@ if __name__ == '__main__':
 
             if n in results:
                 print(f"Updated result for f({n})")
-            results[n] = {"terminal": terminal, "period": period, "generation": generation}
+
+            universe = (min_x, max_x, min_y, max_y)
+            results[n] = {"terminal": terminal, "period": period, "generation": generation, "universe": universe}
             max_n = max(n, max_n)
             save_data(results, max_n)
         else:
             terminal = results[n]["terminal"]
             period = results[n]["period"]
             generation = results[n]["generation"]
+            universe = results[n]["universe"]
 
         if terminal:
             if period > 0:
-                print(f"f({n}) = {period}. Period {period} found at generation {generation}")
+                print(f"f({n}) = {period}. Period {period} found at generation {generation}. Universe: {universe[0]}..{universe[1]}, {universe[2]}..{universe[3]}")
                 #print(f"{n}, {period}, {generation}")
             else:
-                print(f"f({n}) = 0. All cells have died at generation {generation}")
+                print(f"f({n}) = 0. All cells have died at generation {generation}. Universe: {universe[0]}..{universe[1]}, {universe[2]}..{universe[3]}")
                 #print(f"{n}, {period}, {generation}")
         else:
-            print(f"f({n}) = INF. No period found after {generation} generations")
+            print(f"f({n}) = INF. No period found after {generation} generations. Universe: {universe[0]}..{universe[1]}, {universe[2]}..{universe[3]}")
             #print(f"{n}, {MAX_PERIOD}, {generation}")
