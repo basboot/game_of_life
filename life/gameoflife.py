@@ -115,7 +115,7 @@ class GameOfLife:
 MAX_PERIOD = 10000
 
 INITIAL_POPULATION = 1
-FINAL_POPULATION = 101
+FINAL_POPULATION = 200
 
 # TODO: Save results, and use cached results, but bypass cache when settings have been changed
 

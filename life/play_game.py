@@ -11,16 +11,19 @@ BORDER = (150, 150, 150)
 CELL = (200, 200, 0)
 
 # game size
-WINDOW_HEIGHT = 400
-WINDOW_WIDTH = 400
-CELL_SIZE = 10
+WINDOW_HEIGHT = 800
+WINDOW_WIDTH = 800
+CELL_SIZE = 3
 
 # grid origin
 ORIGIN_X = int(WINDOW_WIDTH / CELL_SIZE) / 2
 ORIGIN_Y = int(WINDOW_HEIGHT / CELL_SIZE) / 2
 
 # update speed
-UPDATE_DELAY = 0.3
+UPDATE_DELAY = 0.0125
+
+# population size
+POP_SIZE = 119
 
 class Game:
     def __init__(self):
@@ -53,7 +56,6 @@ class Game:
 
 if __name__ == '__main__':
     # init population
-    POP_SIZE = 10
     initial_population = []
     for i in range(POP_SIZE):
         initial_population.append((0, i))
